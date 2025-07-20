@@ -1,79 +1,564 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login/Register</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      text-align: center;
-    }
-    input, button {
-      margin: 10px 0;
-      padding: 10px;
-      width: 200px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark Mode Styles */
+        body.dark {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            color: #e0e0e0;
+        }
+
+        /* Container for the forms */
+        .auth-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.dark .auth-container {
+            background: #34495e;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            color: #4a69bd;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        body.dark h2 {
+            color: #a8d0f5;
+        }
+
+        /* Form Group Styling */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            transition: color 0.3s ease;
+        }
+
+        body.dark label {
+            color: #c0c0c0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            border-color: #4a69bd;
+            box-shadow: 0 0 0 3px rgba(74, 105, 189, 0.2);
+            outline: none;
+            background-color: #fff;
+        }
+
+        body.dark input[type="text"],
+        body.dark input[type="password"],
+        body.dark input[type="email"],
+        body.dark input[type="tel"] {
+            background-color: #4f6b80;
+            border-color: #666;
+            color: #fff;
+        }
+
+        body.dark input[type="text"]:focus,
+        body.dark input[type="password"]:focus,
+        body.dark input[type="email"]:focus,
+        body.dark input[type="tel"]:focus {
+            border-color: #a8d0f5;
+            box-shadow: 0 0 0 3px rgba(168, 208, 245, 0.3);
+            background-color: #5f7a90;
+        }
+
+        /* Placeholder text color in dark mode */
+        body.dark input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: relative;
+        }
+        .toggle-eye {
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        .toggle-eye:hover {
+            color: #333;
+        }
+        body.dark .toggle-eye {
+            color: #bbb;
+        }
+        body.dark .toggle-eye:hover {
+            color: #fff;
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            margin-top: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #4a69bd, #3b5998);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #3b5998, #4a69bd);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Bubble effect for buttons */
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s ease-out, height 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        button:hover::before {
+            width: 200%;
+            height: 200%;
+            opacity: 1;
+        }
+
+        /* Toggle between Login/Signup */
+        .toggle-form-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 15px;
+            color: #4a69bd;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-form-link:hover {
+            color: #3b5998;
+            text-decoration: underline;
+        }
+
+        body.dark .toggle-form-link {
+            color: #a8d0f5;
+        }
+
+        body.dark .toggle-form-link:hover {
+            color: #8bbdd9;
+        }
+
+        /* Message Display */
+        #message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        body.dark #message.success {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        #message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        body.dark #message.error {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        #message.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Dark Mode Toggle Button */
+        #darkModeToggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background-color: #2c2e4a;
+            color: #ffc107;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+        }
+        #darkModeToggle:hover {
+            background-color: #3a3d66;
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .loading-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid #fff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .auth-container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+            h2 {
+                font-size: 24px;
+            }
+            input, button {
+                font-size: 16px;
+                padding: 12px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <button id="darkModeToggle" onclick="toggleDarkMode()">🌙</button>
 
-<div class="box">
-  <h2>Login / Register</h2>
-  <input type="email" id="email" placeholder="Email"><br>
-  <input type="password" id="password" placeholder="Password"><br>
+    <div class="auth-container">
+        <!-- Login Form -->
+        <div id="loginForm">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" placeholder="Enter your username" />
+            </div>
+            <div class="form-group password-toggle">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" />
+                <span class="toggle-eye" onclick="togglePassword('loginPassword')">👁️</span>
+            </div>
+            <button onclick="handleLogin()">Login</button>
+            <a class="toggle-form-link" onclick="showSignupForm()">Don't have an account? Sign Up</a>
+        </div>
 
-  <button onclick="submitForm('register')">Register</button>
-  <button onclick="submitForm('login')">Login</button>
+        <!-- Signup Form -->
+        <div id="signupForm" style="display: none;">
+            <h2>Sign Up</h2>
+            <div class="form-group">
+                <label for="signupUsername">Username:</label>
+                <input type="text" id="signupUsername" placeholder="Choose a username" />
+            </div>
+            <div class="form-group password-toggle">
+                <label for="signupPassword">Password:</label>
+                <input type="password" id="signupPassword" placeholder="Choose a password" />
+                <span class="toggle-eye" onclick="togglePassword('signupPassword')">👁️</span>
+            </div>
+            <div class="form-group">
+                <label for="signupEmail">Email (Optional):</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email" />
+            </div>
+            <div class="form-group">
+                <label for="signupPhone">Phone Number (Optional):</label>
+                <input type="tel" id="signupPhone" placeholder="Enter your phone number" />
+            </div>
+            <button onclick="handleSignup()">Sign Up</button>
+            <a class="toggle-form-link" onclick="showLoginForm()">Already have an account? Login</a>
+        </div>
 
-  <p id="message"></p>
-</div>
+        <div id="message" class="message"></div>
+    </div>
 
-<script>
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw03XPGMeHiUm7Jd59OEjkTOOoyfk2m1Ml4AMXIJUgofaULIhp_uW7XtZQLWo3lE8_a/exec'; // Replace with your Apps Script Web App URL
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
 
-  function submitForm(action) {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
+    <script>
+        // IMPORTANT: Replace this with your deployed Google Apps Script Web App URL
+        const AUTH_API_URL = "https://script.google.com/macros/s/AKfycbzCaybtex8q3uRfY9yjvqqjH_oIEjSdYZ7EM8OyusPTp7UPsjT6A1-poNzav8W0VsoQCg/exec"; 
 
-    if (!email || !password) {
-      showMessage('Please enter email and password.');
-      return;
-    }
+        /**
+         * Toggles the visibility of a password field.
+         * @param {string} inputId - The ID of the password input field.
+         */
+        function togglePassword(inputId) {
+            const pinInput = document.getElementById(inputId);
+            pinInput.type = pinInput.type === "password" ? "text" : "password";
+        }
 
-    fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action, email, password }),
-      headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.text())
-    .then(text => {
-      if (text.includes('Hello World')) {
-        showMessage('✔ ' + text, 'green');
-      } else {
-        showMessage(text, 'red');
-      }
-    })
-    .catch(err => {
-      showMessage('Error connecting to server.');
-    });
-  }
+        /**
+         * Toggles dark mode on and off and saves the preference to local storage.
+         */
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+        }
 
-  function showMessage(msg, color='red') {
-    const messageEl = document.getElementById('message');
-    messageEl.textContent = msg;
-    messageEl.style.color = color;
-  }
-</script>
+        /**
+         * Shows the message div with the given type and text.
+         * @param {string} type - 'success' or 'error'.
+         * @param {string} text - The message text.
+         */
+        function showMessage(type, text) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = 'message visible ' + type;
+            messageDiv.innerText = text;
+            // Optionally hide after a few seconds
+            setTimeout(() => {
+                messageDiv.classList.remove('visible');
+            }, 5000);
+        }
 
+        /**
+         * Shows the loading overlay.
+         */
+        function showLoading() {
+            document.getElementById("loadingOverlay").classList.add("visible");
+        }
+
+        /**
+         * Hides the loading overlay.
+         */
+        function hideLoading() {
+            document.getElementById("loadingOverlay").classList.remove("visible");
+        }
+
+        /**
+         * Switches the display to the signup form.
+         */
+        function showSignupForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+            document.getElementById('message').classList.remove('visible'); // Clear message
+        }
+
+        /**
+         * Switches the display to the login form.
+         */
+        function showLoginForm() {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('message').classList.remove('visible'); // Clear message
+        }
+
+        /**
+         * Handles the signup process, sending data to the Google Apps Script backend.
+         */
+        async function handleSignup() {
+            const username = document.getElementById('signupUsername').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phoneNo = document.getElementById('signupPhone').value.trim();
+
+            if (!username || !password) {
+                showMessage('error', 'Username and Password are required for signup.');
+                return;
+            }
+
+            if (!AUTH_API_URL || AUTH_API_URL === "YOUR_DEPLOYED_APPS_SCRIPT_URL_HERE") {
+                showMessage('error', 'Google Apps Script URL is not configured. Please set it up.');
+                return;
+            }
+
+            showLoading();
+            try {
+                const response = await fetch(AUTH_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain', // Google Apps Script expects text/plain for raw JSON body
+                    },
+                    body: JSON.stringify({
+                        action: 'signup',
+                        username: username,
+                        password: password,
+                        email: email,
+                        phoneNo: phoneNo
+                    })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showMessage('success', result.message);
+                    // Optionally clear fields or switch to login form
+                    document.getElementById('signupUsername').value = '';
+                    document.getElementById('signupPassword').value = '';
+                    document.getElementById('signupEmail').value = '';
+                    document.getElementById('signupPhone').value = '';
+                    showLoginForm(); // Automatically switch to login after successful signup
+                } else {
+                    showMessage('error', result.message);
+                }
+            } catch (error) {
+                console.error('Error during signup:', error);
+                showMessage('error', 'An error occurred during signup. Please check your network and script URL.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        /**
+         * Handles the login process, sending data to the Google Apps Script backend.
+         */
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!username || !password) {
+                showMessage('error', 'Username and Password are required for login.');
+                return;
+            }
+
+            if (!AUTH_API_URL || AUTH_API_URL === "YOUR_DEPLOYED_APPS_SCRIPT_URL_HERE") {
+                showMessage('error', 'Google Apps Script URL is not configured. Please set it up.');
+                return;
+            }
+
+            showLoading();
+            try {
+                const response = await fetch(AUTH_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain', // Google Apps Script expects text/plain for raw JSON body
+                    },
+                    body: JSON.stringify({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showMessage('success', result.message + ` Welcome, ${result.data.username}!`);
+                    // In a real application, you would store a token/session here
+                    // and redirect the user to the main application page.
+                    // For this demo, we'll just show a success message.
+                    document.getElementById('loginUsername').value = '';
+                    document.getElementById('loginPassword').value = '';
+                } else {
+                    showMessage('error', result.message);
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                showMessage('error', 'An error occurred during login. Please check your network and script URL.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Apply dark mode on load if previously enabled
+        window.onload = () => {
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark");
+            }
+        };
+    </script>
 </body>
 </html>
